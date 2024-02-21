@@ -1,4 +1,5 @@
 local fn = vim.fn
+local no_extfilet = require("accidentslipt.config").no_exec_files
 local M = {
 	direction = { left = "h", right = "l", up = "k", bottom = "j" },
 }
@@ -47,6 +48,20 @@ function M.calculate_number_windows()
 		end
 	end
 	return win_len
+end
+
+function M.check_by_no_execfiles()
+	local cursor_win_filetype = vim.bo.filetype
+	for i = 1, #no_extfilet do
+		if no_extfilet[i] == cursor_win_filetype then
+			return true
+		end
+	end
+	return false
+end
+
+function M.check_version(major, minor, patch)
+	return major >= vim.version()["major"] and minor >= vim.version()["minor"] and patch >= vim.version()["patch"]
 end
 
 return M
