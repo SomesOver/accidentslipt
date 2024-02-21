@@ -1,25 +1,10 @@
--- @author      : denstiny (2254228017@qq.com)
--- @file        : init
--- @created     : 星期三 2月 21, 2024 12:00:59 CST
--- @github      : https://github.com/denstiny
--- @blog        : https://denstiny.github.io
-
 local M = {}
-local api = vim.api
-local view = require("colorful-winsep.view")
-local config = require("colorful-winsep.config")
+local view = require("accidentslipt.view")
+local config = require("accidentslipt.config")
 
-function M:setup()
+function M:setup(opts)
+	config:merge_options(opts)
 	view:init()
-	api.nvim_create_autocmd(config.events, {
-		group = M.auto_group,
-		callback = function(opts)
-			view:dividing_split_line()
-		end,
-	})
-	vim.cmd([[
-        hi NvimSeparator guibg=None guifg=yellow
-    ]])
 end
 
 return M
