@@ -1,7 +1,7 @@
 local M = {}
 local api = vim.api
-local utils = require("colorful-winsep.utils")
-local config = require("colorful-winsep.config")
+local utils = require("accidentslipt.utils")
+local config = require("accidentslipt.config")
 
 function M:create_line()
 	local buf = api.nvim_create_buf(false, true)
@@ -11,7 +11,7 @@ function M:create_line()
 		start_symbol = "",
 		body_symbol = "",
 		end_symbol = "",
-		loop = vim.loop.new_timer(),
+		loop = nil,
 		buffer = buf,
 		window = nil,
 		opts = {
@@ -35,6 +35,52 @@ function M:create_line()
 		self.parrent = parrent
 	end
 
+	function line:smooth_move_x(start_x, end_x)
+		local timer = vim.loop.new_timer()
+		local _line = self
+		local cu = math.abs(start_x - end_x)
+		timer:start(
+			0,
+			10,
+			vim.schedule_wrap(function()
+				if start_x > end_x then
+					start_x = start_x - 1
+				elseif start_x < end_x then
+					start_x = start_x + 1
+				end
+				cu = cu - 1
+				_line:move(start_x, _line:y())
+				if cu < 0 then
+					timer:stop()
+					--timer:close()
+				end
+			end)
+		)
+	end
+
+	function line:smooth_move_y(start_y, end_y)
+		local timer = vim.loop.new_timer()
+		local _line = self
+		local cu = math.abs(start_y - end_y)
+		timer:start(
+			0,
+			3,
+			vim.schedule_wrap(function()
+				if start_y > end_y then
+					start_y = start_y - 1
+				elseif start_y < end_y then
+					start_y = start_y + 1
+				end
+				_line:move(_line:x(), start_y)
+				cu = cu - 1
+				if cu < 0 then
+					timer:stop()
+					--timer:close()
+				end
+			end)
+		)
+	end
+
 	function line:hide()
 		if self.window ~= nil then
 			vim.api.nvim_win_close(self.window, false)
@@ -48,6 +94,14 @@ function M:create_line()
 		api.nvim_win_set_option(win, "winhl", "Normal:NvimSeparator")
 		self.window = win
 		self._show = true
+	end
+
+	function line:x()
+		return self.opts.row
+	end
+
+	function line:y()
+		return self.opts.col
 	end
 
 	function line:move(x, y)
