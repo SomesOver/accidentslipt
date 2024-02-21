@@ -1,8 +1,8 @@
 local M = {}
-local view = require("accidentslipt.view")
 local config = require("accidentslipt.config")
+local view = require("accidentslipt.view")
 
-function M:setup(opts)
+function M.setup(opts)
 	config:merge_options(opts)
 	view:init()
 end
