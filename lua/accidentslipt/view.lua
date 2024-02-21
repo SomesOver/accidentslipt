@@ -1,9 +1,10 @@
-local utils = require("colorful-winsep.utils")
-local direction = require("colorful-winsep.utils").direction
-local LINE = require("colorful-winsep.line")
-local symbols = require("colorful-winsep.config").symbols
-local anchor = require("colorful-winsep.config").anchor
-local auto_group = require("colorful-winsep.config").auto_group
+local utils = require("accidentslipt.utils")
+local direction = require("accidentslipt.utils").direction
+local LINE = require("accidentslipt.line")
+local symbols = require("accidentslipt.config").symbols
+local anchor = require("accidentslipt.config").anchor
+local auto_group = require("accidentslipt.config").auto_group
+local config = require("accidentslipt.config")
 
 local M = {
 	wins = {
@@ -30,6 +31,17 @@ function M:init()
 	self.wins[direction.bottom].start_symbol = symbols[1]
 	self.wins[direction.bottom].body_symbol = symbols[1]
 	self.wins[direction.bottom].end_symbol = symbols[1]
+
+	M.highlight()
+	vim.api.nvim_create_autocmd(config.events, {
+		group = auto_group,
+		callback = function(opts)
+			if utils.check_by_no_execfiles() then
+				return
+			end
+			self:dividing_split_line()
+		end,
+	})
 end
 
 function M:dividing_split_line()
@@ -56,9 +68,12 @@ function M:dividing_split_line()
 			anchor_x = anchor_x + 1
 		end
 
-		win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y)
 		if not win:is_show() then
+			win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y)
 			win:show()
+		else
+			win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
+			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y)
 		end
 	else
 		self.wins[direction.left]:hide()
@@ -80,9 +95,14 @@ function M:dividing_split_line()
 		if not utils.direction_have(utils.direction.up) then
 			anchor_x = anchor_x + 1
 		end
-		win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y + c_win_width)
+		--win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
+		--win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y + c_win_width)
 		if not win:is_show() then
+			win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y + c_win_width)
 			win:show()
+		else
+			win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
+			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y + c_win_width)
 		end
 	else
 		self.wins[direction.right]:hide()
@@ -100,9 +120,12 @@ function M:dividing_split_line()
 		end
 		win:set_width(c_win_width + anchor_width)
 
-		win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y)
 		if not win:is_show() then
+			win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y)
 			win:show()
+		else
+			win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
+			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y)
 		end
 	else
 		self.wins[direction.up]:hide()
@@ -121,12 +144,32 @@ function M:dividing_split_line()
 		end
 		win:set_width(c_win_width + anchor_width)
 
-		win:move(c_win_pos[1] + c_win_height + anchor_x, c_win_pos[2] + anchor_y)
 		if not win:is_show() then
+			win:move(c_win_pos[1] + c_win_height + anchor_x, c_win_pos[2] + anchor_y)
 			win:show()
+		else
+			win:smooth_move_x(win:x(), c_win_pos[1] + c_win_height + anchor_x)
+			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y)
 		end
 	else
 		self.wins[direction.bottom]:hide()
+	end
+end
+
+function M.highlight()
+	local opts = config.highlight
+
+	if utils.check_version(0, 9, 0) then
+		-- `nvim_get_hl` is added in 0.9.0
+		if vim.tbl_isempty(vim.api.nvim_get_hl(0, { name = "NvimSeparator" })) then
+			vim.api.nvim_set_hl(0, "NvimSeparator", opts)
+		end
+	else
+		-- if name is not existed, `nvim_get_hl_by_name` return an error
+		local ok, _ = pcall(vim.api.nvim_get_hl_by_name, "NvimSeparator", false)
+		if not ok then
+			vim.api.nvim_set_hl(0, "NvimSeparator", opts)
+		end
 	end
 end
 
