@@ -1,47 +1,33 @@
 local utils = require("accidentslipt.utils")
 local direction = require("accidentslipt.utils").direction
 local LINE = require("accidentslipt.line")
-local symbols = require("accidentslipt.config").symbols
-local anchor = require("accidentslipt.config").anchor
 local auto_group = require("accidentslipt.config").auto_group
 local config = require("accidentslipt.config")
 
-local M = {
-	wins = {
-		[direction.left] = LINE:create_horizontal_line(0),
-		[direction.right] = LINE:create_horizontal_line(0),
-		[direction.up] = LINE:create_vertical_line(0),
-		[direction.bottom] = LINE:create_vertical_line(0),
-	},
-}
+local M = {}
 
-function M:init()
-	self.wins[direction.left].start_symbol = symbols[3]
-	self.wins[direction.left].body_symbol = symbols[2]
-	self.wins[direction.left].end_symbol = symbols[5]
+function M:init(opts)
+	M.config = config:merge_options(opts)
+	symbols = M.config.symbols
 
-	self.wins[direction.right].start_symbol = symbols[4]
-	self.wins[direction.right].body_symbol = symbols[2]
-	self.wins[direction.right].end_symbol = symbols[6]
-
-	self.wins[direction.up].start_symbol = symbols[1]
-	self.wins[direction.up].body_symbol = symbols[1]
-	self.wins[direction.up].end_symbol = symbols[1]
-
-	self.wins[direction.bottom].start_symbol = symbols[1]
-	self.wins[direction.bottom].body_symbol = symbols[1]
-	self.wins[direction.bottom].end_symbol = symbols[1]
+	self.wins = {
+		[direction.left] = LINE:create_horizontal_line(0, symbols[3], symbols[2], symbols[5]),
+		[direction.right] = LINE:create_horizontal_line(0, symbols[4], symbols[2], symbols[6]),
+		[direction.up] = LINE:create_vertical_line(0, symbols[1], symbols[1], symbols[1]),
+		[direction.bottom] = LINE:create_vertical_line(0, symbols[1], symbols[1], symbols[1]),
+	}
 
 	config.highlight()
-	vim.api.nvim_create_autocmd(config.events, {
+	vim.api.nvim_create_autocmd(M.config.events, {
 		group = auto_group,
-		callback = function(opts)
-			if utils.check_by_no_execfiles() then
+		callback = function()
+			if utils.check_by_no_execfiles(M.config.no_exec_files) then
 				return
 			end
 			self:dividing_split_line()
 		end,
 	})
+
 	vim.api.nvim_create_autocmd({ "ColorScheme", "ColorSchemePre" }, {
 		group = auto_group,
 		callback = function()
@@ -51,6 +37,7 @@ function M:init()
 end
 
 function M:dividing_split_line()
+	local anchor = M.config.anchor
 	local c_win_pos = vim.api.nvim_win_get_position(0)
 	local c_win_width = vim.fn.winwidth(0)
 	local c_win_height = vim.fn.winheight(0)
