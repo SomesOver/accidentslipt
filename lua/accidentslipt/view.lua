@@ -81,7 +81,10 @@ function M:dividing_split_line()
 		if win_count == 2 then
 			local height = c_win_height + anchor_height
 			anchor_height = anchor_height - (height - math.ceil(height / 2))
-			anchor_x = anchor_x - anchor_height + 1
+			anchor_x = anchor_x - anchor_height
+			if vim.opt.winbar ~= "" then
+				anchor_x = anchor_x + 1
+			end
 		end
 		win:set_height(c_win_height + anchor_height)
 
