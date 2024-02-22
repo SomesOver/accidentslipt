@@ -1,7 +1,7 @@
 local M = {
 	symbols = { "━", "┃", "┏", "┓", "┗", "┛" },
 	no_exec_files = { "packer", "TelescopePrompt", "mason", "CompetiTest" },
-	highlight = { fg = "#957CC6", bg = vim.api.nvim_get_hl_by_name("Normal", true)["background"] },
+	hi = { fg = "#957CC6", bg = vim.api.nvim_get_hl_by_name("Normal", true)["background"] },
 	events = { "WinEnter", "BufEnter", "WinResized", "VimResized" },
 	anchor = {
 		left = { height = 1, x = -1, y = -1 },
@@ -19,7 +19,7 @@ function M:merge_options(opts)
 end
 
 function M.highlight()
-	local opts = M.highlight
+	local opts = M.hi
 
 	function check_version(major, minor, patch)
 		return major >= vim.version()["major"] and minor >= vim.version()["minor"] and patch >= vim.version()["patch"]
