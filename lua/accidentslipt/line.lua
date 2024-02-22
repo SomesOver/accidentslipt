@@ -1,7 +1,6 @@
 local M = {}
 local api = vim.api
 local utils = require("accidentslipt.utils")
-local config = require("accidentslipt.config")
 
 function M:create_line()
 	local buf = api.nvim_create_buf(false, true)
@@ -143,11 +142,11 @@ function M:create_line()
 end
 
 -- create vertical line
-function M:create_vertical_line(width)
+function M:create_vertical_line(width, start_symbol, body_symbol, end_symbol)
 	local line = M:create_line()
-	line.start_symbol = config.symbols[3]
-	line.body_symbol = config.symbols[1]
-	line.end_symbol = config.symbols[4]
+	line.start_symbol = start_symbol
+	line.body_symbol = body_symbol
+	line.end_symbol = end_symbol
 
 	line:set_width(width)
 	line:set_height(1)
@@ -159,11 +158,11 @@ function M:create_vertical_line(width)
 end
 
 -- create horizontal line
-function M:create_horizontal_line(height)
+function M:create_horizontal_line(height, start_symbol, body_symbol, end_symbol)
 	local line = M:create_line()
-	line.start_symbol = config.symbols[3]
-	line.body_symbol = config.symbols[2]
-	line.end_symbol = config.symbols[5]
+	line.start_symbol = start_symbol
+	line.body_symbol = body_symbol
+	line.end_symbol = end_symbol
 
 	line:set_width(1)
 	line:set_height(height)
