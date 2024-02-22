@@ -34,6 +34,61 @@ function M:create_line()
 		self.parrent = parrent
 	end
 
+	function line:height()
+		return self.opts.height
+	end
+
+	function line:width()
+		return self.opts.width
+	end
+
+	function line:smooth_height(start_height, end_height)
+		local timer = vim.loop.new_timer()
+		local _line = self
+		local cu = math.abs(start_height - end_height)
+		timer:start(
+			0,
+			30,
+			vim.schedule_wrap(function()
+				if start_height > end_height then
+					start_height = start_height - 1
+				elseif start_height < end_height then
+					start_height = start_height + 1
+				end
+
+				cu = cu - 1
+				_line:set_height(start_height)
+				if cu < 0 then
+					timer:stop()
+					--timer:close()
+				end
+			end)
+		)
+	end
+
+	function line:smooth_width(start_width, end_width)
+		local timer = vim.loop.new_timer()
+		local _line = self
+		local cu = math.abs(start_width - end_width)
+		timer:start(
+			0,
+			10,
+			vim.schedule_wrap(function()
+				if start_width > end_width then
+					start_width = start_width - 1
+				elseif start_width < end_width then
+					start_width = start_width + 1
+				end
+				cu = cu - 1
+				_line:set_width(start_width)
+				if cu < 0 then
+					timer:stop()
+					--timer:close()
+				end
+			end)
+		)
+	end
+
 	function line:smooth_move_x(start_x, end_x)
 		local timer = vim.loop.new_timer()
 		local _line = self
