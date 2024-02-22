@@ -1,6 +1,7 @@
 # accidentslipt.nvim
 
-https://user-images.githubusercontent.com/57088952/234891291-e0657633-eec8-40f7-b512-1da29c01ac05.mp4
+
+https://github.com/SomesOver/accidentslipt/assets/160035610/2c8ad939-bb42-4a45-997b-a164e2c43108
 > configurable window separtor
 
 ## Motivation
