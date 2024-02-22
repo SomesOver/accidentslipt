@@ -56,17 +56,22 @@ function M:dividing_split_line()
 			local height = c_win_height + anchor_height
 			anchor_height = anchor_height - (height - math.ceil(height / 2))
 		end
+
 		win:set_height(c_win_height + anchor_height)
 		if not utils.direction_have(utils.direction.up) then
 			anchor_x = anchor_x + 1
 		end
 
+		local x = c_win_pos[1] + anchor_x
+		local y = c_win_pos[2] + anchor_y
+
 		if not win:is_show() then
-			win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y)
+			win:move(x, y)
 			win:show()
+		elseif y == win:y() then
+			win:smooth_move_x(win:x(), x)
 		else
-			win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
-			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y)
+			win:move(x, y)
 		end
 	else
 		self.wins[direction.left]:hide()
@@ -93,12 +98,15 @@ function M:dividing_split_line()
 		end
 		--win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
 		--win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y + c_win_width)
+		local x = c_win_pos[1] + anchor_x
+		local y = c_win_pos[2] + anchor_y + c_win_width
 		if not win:is_show() then
-			win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y + c_win_width)
+			win:move(x, y)
 			win:show()
+		elseif win:y() == y then
+			win:smooth_move_x(win:x(), x)
 		else
-			win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
-			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y + c_win_width)
+			win:move(x, y)
 		end
 	else
 		self.wins[direction.right]:hide()
@@ -116,12 +124,15 @@ function M:dividing_split_line()
 		end
 		win:set_width(c_win_width + anchor_width)
 
+		local x = c_win_pos[1] + anchor_x
+		local y = c_win_pos[2] + anchor_y
 		if not win:is_show() then
-			win:move(c_win_pos[1] + anchor_x, c_win_pos[2] + anchor_y)
+			win:move(x, y)
 			win:show()
+		elseif x == win:x() then
+			win:smooth_move_y(win:y(), y)
 		else
-			win:smooth_move_x(win:x(), c_win_pos[1] + anchor_x)
-			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y)
+			win:move(x, y)
 		end
 	else
 		self.wins[direction.up]:hide()
@@ -140,12 +151,15 @@ function M:dividing_split_line()
 		end
 		win:set_width(c_win_width + anchor_width)
 
+		local x = c_win_pos[1] + c_win_height + anchor_x
+		local y = c_win_pos[2] + anchor_y
 		if not win:is_show() then
-			win:move(c_win_pos[1] + c_win_height + anchor_x, c_win_pos[2] + anchor_y)
+			win:move(x, y)
 			win:show()
+		elseif x == win:x() then
+			win:smooth_move_y(win:y(), y)
 		else
-			win:smooth_move_x(win:x(), c_win_pos[1] + c_win_height + anchor_x)
-			win:smooth_move_y(win:y(), c_win_pos[2] + anchor_y)
+			win:move(x, y)
 		end
 	else
 		self.wins[direction.bottom]:hide()
